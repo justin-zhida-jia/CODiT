@@ -15,6 +15,7 @@ from society.lateral import LateralFlowUK
 from disease import Covid
 from population.networks.radial_age import RadialAgePopulation
 from population.networks.household_workplace import HouseholdWorkplacePopulation
+from population.networks.city import CityPopulation
 
 ALL_TIME_DAYS = 15
 
@@ -36,6 +37,14 @@ def test_two_track_hw_society():
     random.seed(42)
     o = Outbreak(TwoTrackTester(), Covid(), pop_size=5000, seed_size=50, n_days=150,
                  population_type=HouseholdWorkplacePopulation)
+    o.simulate()
+
+
+def test_two_track_city_society():
+    random.seed(42)
+    o = Outbreak(LateralFlowUK(config=dict(SIMULATOR_PERIODS_PER_DAY=4, DAILY_TEST_CAPACITY_PER_HEAD=1)), Covid(),
+                 pop_size=8000, seed_size=8000//80, n_days=150,
+                 population_type=CityPopulation)
     o.simulate()
 
 
