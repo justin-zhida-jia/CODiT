@@ -2,8 +2,6 @@ import random
 
 from population.person import Person
 
-random.seed(42)
-
 
 class PersonCovid(Person):
     def __init__(self, society, config=None, name=None):
