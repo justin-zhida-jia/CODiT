@@ -1,4 +1,4 @@
-from society import UKSociety
+from codit.society import UKSociety
 
 
 class StrategicTester(UKSociety):

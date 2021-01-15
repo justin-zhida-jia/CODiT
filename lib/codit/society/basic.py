@@ -1,5 +1,5 @@
-from config import set_config
-from society.test import TestQueue
+from codit.config import set_config
+from codit.society.test import TestQueue
 
 class Society:
     def __init__(self, episodes_per_day=None, encounter_size=None, prob_unnecessary_worry=0, config=None):

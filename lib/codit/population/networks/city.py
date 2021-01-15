@@ -2,10 +2,10 @@ import random
 import numpy as np
 import logging
 
-from population.population import FixedNetworkPopulation
-from population.networks import household_workplace
-from population.networks.city_config.city_cfg import MINIMUM_WORKING_AGE, MAXIMUM_WORKING_AGE, MAXIMUM_CLASS_AGE, MINIMUM_CLASS_AGE, AVERAGE_HOUSEHOLD_SIZE
-from population.networks.city_config.typical_households import build_characteristic_households
+from codit.population.population import FixedNetworkPopulation
+from codit.population.networks import household_workplace
+from codit.population.networks.city_config.city_cfg import MINIMUM_WORKING_AGE, MAXIMUM_WORKING_AGE, MAXIMUM_CLASS_AGE, MINIMUM_CLASS_AGE, AVERAGE_HOUSEHOLD_SIZE
+from codit.population.networks.city_config.typical_households import build_characteristic_households
 
 EPHEMERAL_CONTACT = 0.1  # people per day
 

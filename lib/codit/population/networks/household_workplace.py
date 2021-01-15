@@ -4,7 +4,7 @@ import itertools
 import numpy as np
 import logging
 
-from population import FixedNetworkPopulation
+from codit.population import FixedNetworkPopulation
 
 _h = []
 for i in range(6):

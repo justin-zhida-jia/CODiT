@@ -1,6 +1,6 @@
 import logging
 
-from config import set_config
+from codit.config import set_config
 
 
 def covid_hazard(age):

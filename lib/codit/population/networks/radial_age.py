@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from population import FixedNetworkPopulation
+from codit.population import FixedNetworkPopulation
 
 
 class RadialAgePopulation(FixedNetworkPopulation):

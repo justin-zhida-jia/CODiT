@@ -1,6 +1,6 @@
 import random
 
-from population.person import Person
+from codit.population.person import Person
 
 
 class PersonCovid(Person):

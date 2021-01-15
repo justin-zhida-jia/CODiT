@@ -1,6 +1,6 @@
 import random
 from collections import defaultdict
-from population.person import Person
+from codit.population.person import Person
 
 import numpy as np
 

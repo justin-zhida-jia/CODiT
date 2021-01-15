@@ -1,19 +1,14 @@
-import sys
-import os
-import random
 import numpy as np
 
-REPO_DIR = os.path.dirname(os.getcwd())
-sys.path.append(os.path.join(REPO_DIR, 'lib'))
 ALL_TIME_DAYS = 15
 
-from society import UKSociety
-from population.population import Population
-from population.networks.city import build_households
-from population.networks.city import build_class_groups
-from population.networks.city import is_care_home
-from population.networks.city_config import city_cfg as cfg
-from population.networks.city_config import typical_households as thh
+from codit.society import UKSociety
+from codit.population.population import Population
+from codit.population.networks.city import build_households
+from codit.population.networks.city import build_class_groups
+from codit.population.networks.city import is_care_home
+from codit.population.networks.city_config import city_cfg as cfg
+from codit.population.networks.city_config import typical_households as thh
 
 POP_SIZE = 23000
 
