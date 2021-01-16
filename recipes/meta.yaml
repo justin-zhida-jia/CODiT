@@ -1,11 +1,12 @@
+{% set setup_data = load_setup_py_data() %}
 
 package:
   name: codit
-  version: "1.0.0"
+  version: {{ setup_data.version }}
 
 source:
-  git_rev: "1.0.0"
   git_url: git@github.com:jeremy-large/CODiT.git
+  git_rev: {{ setup_data.version }}
 
 requirements:
   build:
