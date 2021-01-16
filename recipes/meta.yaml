@@ -25,6 +25,8 @@ requirements:
     - networkx
 
 test:
+  imports:
+    - codit
   source_files:
     - tests/test_*.py
   requires:
