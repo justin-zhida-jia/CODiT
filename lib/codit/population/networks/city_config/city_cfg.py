@@ -1,18 +1,20 @@
-import os
 import pandas as pd
+from pathlib import Path
 
+# This will resolve to the shared data dir under the current PYTHONPATH or CONDA_PREFIX
+SHARE_DIR = Path(__file__).parent / "../../../../../share"
 
-def read_demographic_data(section, file_name, repo_dir):
+def read_demographic_data(section, file_name, data_dir=SHARE_DIR / "codit/data/city"):
     """
     :param section: population
     :param file_name: table-8.csv
     :param repo_dir: desired data type
     :return: value according to table
     """
-    return pd.read_csv(os.path.join(repo_dir, 'data', 'city', section, file_name), index_col=0)
+    return pd.read_csv(data_dir / section / file_name, index_col=0)
 
 
-DEMO_DATA = (read_demographic_data('population', 'table-8.csv', "..")["%"] / 100).to_dict()
+DEMO_DATA = (read_demographic_data('population', 'table-8.csv')["%"] / 100).to_dict()
 ROUNDING = 0.001  # rounding such that sum of rates equals 1
 
 "Averages based on city's Data"

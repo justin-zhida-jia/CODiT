@@ -1,0 +1,40 @@
+{% set setup_data = load_setup_py_data() %}
+
+package:
+  name: codit
+  version: {{ setup_data.version }}
+
+source:
+  git_url: git@github.com:jeremy-large/CODiT.git
+  git_rev: {{ setup_data.version }}
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - numpy
+    - pandas
+    - scikit-learn
+    - statsmodels
+    - xlrd
+    - matplotlib
+    - jupyterlab
+    - nbconvert
+    - pydot
+    - networkx
+
+test:
+  imports:
+    - codit
+  source_files:
+    - tests/test_*.py
+  requires:
+    - pytest
+  commands:
+    - pytest tests/
+
+about:
+  home:  https://github.com/jeremy-large/CODiT
+  license:  MIT

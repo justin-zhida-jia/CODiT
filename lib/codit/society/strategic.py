@@ -1,5 +1,5 @@
-from society import UKSociety, HighValencyTester
-from society.test import TestQueue
+from codit.society import UKSociety, HighValencyTester
+from codit.society.test import TestQueue
 import random
 
 

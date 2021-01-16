@@ -1,6 +1,6 @@
 import random
 
-from config import set_config
+from codit.config import set_config
 
 
 class Isolation:

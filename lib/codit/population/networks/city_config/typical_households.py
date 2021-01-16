@@ -2,7 +2,7 @@ import logging
 import random
 import numpy as np
 
-from population.networks.city_config import city_cfg as cfg
+from codit.population.networks.city_config import city_cfg as cfg
 
 
 def build_characteristic_households(total_h=50000):

@@ -1,21 +1,15 @@
-import sys
-import os
 import random
 import numpy as np
 
-# point at library; I need some lessons on doing good PYTHONPATHs:
-REPO_DIR = os.path.dirname(os.getcwd())
-sys.path.append(os.path.join(REPO_DIR, 'lib'))
-
-from outbreak import Outbreak
-from society import TestingTracingSociety
-from society.alternatives import StrategicTester
-from society.strategic import TwoTrackTester
-from society.lateral import LateralFlowUK
-from disease import Covid
-from population.networks.radial_age import RadialAgePopulation
-from population.networks.household_workplace import HouseholdWorkplacePopulation
-from population.networks.city import CityPopulation
+from codit.outbreak import Outbreak
+from codit.society import TestingTracingSociety
+from codit.society.alternatives import StrategicTester
+from codit.society.strategic import TwoTrackTester
+from codit.society.lateral import LateralFlowUK
+from codit.disease import Covid
+from codit.population.networks.radial_age import RadialAgePopulation
+from codit.population.networks.household_workplace import HouseholdWorkplacePopulation
+from codit.population.networks.city import CityPopulation
 
 ALL_TIME_DAYS = 15
 
@@ -63,18 +57,18 @@ def test_covid_model():
     # for k, v in o.pop.contacts.items():
     #     print(k, len(v))
     #                           t     cov   risks  tests  isol
-    assert o.recorder.story[:15] == [[0.5, 0.25, 0.125, 0.0, 0.125, 0.0],
-                                     [1.0, 0.25, 0.125, 0.25, 0.0, 0.0],
-                                     [1.5, 0.25, 0.125, 0.0, 0.0, 0.0],
-                                     [2.0, 0.375, 0.125, 0.0, 0.0, 0.0],
-                                     [2.5, 0.375, 0.125, 0.0, 0.0, 0.0],
-                                     [3.0, 0.375, 0.125, 0.0, 0.0, 0.0],
-                                     [3.5, 0.375, 0.125, 0.0, 0.0, 0.0],
-                                     [4.0, 0.375, 0.125, 0.0, 0.0, 0.125],
-                                     [4.5, 0.375, 0.25, 0.0, 0.0, 0.125],
-                                     [5.0, 0.5, 0.25, 0.0, 0.0, 0.125],
-                                     [5.5, 0.5, 0.125, 0.0, 0.0, 0.125],
-                                     [6.0, 0.5, 0.25, 0.0, 0.0, 0.125],
-                                     [6.5, 0.5, 0.25, 0.0, 0.0, 0.125],
-                                     [7.0, 0.5, 0.25, 0.0, 0.0, 0.125],
-                                     [7.5, 0.5, 0.25, 0.0, 0.0, 0.125]]
+    np.testing.assert_allclose(o.recorder.story[:15], [[0.5, 0.25, 0.125, 0.0, 0.125, 0.0],
+                                                       [1.0, 0.25, 0.125, 0.25, 0.0, 0.0],
+                                                       [1.5, 0.25, 0.125, 0.0, 0.0, 0.0],
+                                                       [2.0, 0.375, 0.125, 0.0, 0.0, 0.0],
+                                                       [2.5, 0.375, 0.125, 0.0, 0.0, 0.0],
+                                                       [3.0, 0.375, 0.125, 0.0, 0.0, 0.0],
+                                                       [3.5, 0.375, 0.125, 0.0, 0.0, 0.0],
+                                                       [4.0, 0.375, 0.125, 0.0, 0.0, 0.125],
+                                                       [4.5, 0.375, 0.25, 0.0, 0.0, 0.125],
+                                                       [5.0, 0.5, 0.25, 0.0, 0.0, 0.125],
+                                                       [5.5, 0.5, 0.125, 0.0, 0.0, 0.125],
+                                                       [6.0, 0.5, 0.25, 0.0, 0.0, 0.125],
+                                                       [6.5, 0.5, 0.25, 0.0, 0.0, 0.125],
+                                                       [7.0, 0.5, 0.25, 0.0, 0.0, 0.125],
+                                                       [7.5, 0.5, 0.25, 0.0, 0.0, 0.125]])

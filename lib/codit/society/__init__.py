@@ -1,6 +1,6 @@
 import random
 
-from society.basic import Society
+from codit.society.basic import Society
 
 
 class TestingSociety(Society):

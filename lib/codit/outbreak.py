@@ -1,10 +1,10 @@
 import pandas as pd
 import logging
 
-from population.covid import PersonCovid
-from population.population import FixedNetworkPopulation
+from codit.population.covid import PersonCovid
+from codit.population.population import FixedNetworkPopulation
 
-from disease import covid_hazard
+from codit.disease import covid_hazard
 
 
 class Outbreak:
