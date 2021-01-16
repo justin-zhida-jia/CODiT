@@ -4,7 +4,7 @@ from pathlib import Path
 # This will resolve to the shared data dir under the current PYTHONPATH or CONDA_PREFIX
 SHARE_DIR = Path(__file__).parent / "../../../../../share"
 
-def read_demographic_data(section, file_name, data_dir=SHARE_DIR / "codit/city"):
+def read_demographic_data(section, file_name, data_dir=SHARE_DIR / "codit/data/city"):
     """
     :param section: population
     :param file_name: table-8.csv
