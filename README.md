@@ -108,7 +108,7 @@ build the CODiT conda package and then install it into your current conda enviro
 ```
 $ cd CODiT
 $ conda build --no-test .
-$ conda install codit
+$ conda install --use-local codit
 ```
 ## Running instructions
 
