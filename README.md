@@ -66,7 +66,7 @@ If you're using conda you can enter the repos directory, build the CODiT conda p
 ```
 $ cd CODiT
 $ conda build .
-$ conda install codit
+$ conda install --use-local codit
 ```
 
 ### 2) Local development
