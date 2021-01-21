@@ -62,7 +62,7 @@ your **PYTHONPATH** environment variable so that you can import the modules loca
 If you're using conda you can enter the repos directory, build the CODiT conda package and then install it into your current conda environment:
 ```
 $ cd CODiT
-$ conda build --no-test .
+$ conda build .
 $ conda install codit
 ```
 
