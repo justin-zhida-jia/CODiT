@@ -1,11 +1,11 @@
 #  Covid Opensource Digital Twin project (CODiT)
 
-#### Creating provisional code to model a ccommunity's response to the Covid-19 epidemic
+#### Creating provisional code to model a community's response to the Covid-19 epidemic
 
 ## Introduction
 
 This codebase uses agent-based methods to simulate the spread of an epidemic such as Covid-19 through a population.
-It was motivated by concern that many geographies could benefit from a _focused-systems_ approach to supressing C19. 
+It was motivated by concern that many geographies could benefit from a _focused-systems_ approach to suppressing C19. 
 For example, it could be used to explore the hypothesis that a stream of testing focused on the people who are most likely 
 to spread the disease could reduce R significantly. 
 
@@ -28,21 +28,24 @@ We now provide a little more detail on the Model.
 ### Model
 This is the first of the three components provided in this codebase. It consists of:
 
-1.	A model population, potentially stratified by age, gender and C19 risk, who
-a.	experience relevant symptoms due both to C19 and to non-C19, and 
-b.	pass-on C19 to contacts on a realistic timescale.
+1.	A model [population](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city.py#L13), 
+potentially stratified by age, gender and C19 risk, who
+a.	experience [relevant symptoms](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/covid.py#L37) 
+due both to C19 and to non-C19, and 
+b.	[pass-on C19 to contacts](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/person.py#L38) on a realistic timescale.
 
 2.	A network of physical contacts in Leeds at this time
-a.	Household structure
-b.	Study- / work-place structure
-c.  School classroom structure
-d.  Care home structure
-e.	Ephemeral contact
+a.	[Household structure](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city_config/typical_households.py#L8)
+b.	[Study- / work-place structure](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city.py#L123)
+c.  [School classroom structure](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city.py#L73))
+d.  [Care home structure](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city.py#L44)
+e.	[Ephemeral contact](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/population/networks/city.py#L22)
 f.  ...
 
-3.	Estimates of compliance by the public with health measures such as the current Test/Trace/Isolate system, built around a scaffold of interpretable parameters
+3.	Estimates of compliance by the public with health measures such as the current Test/Trace/Isolate system, 
+built around a [scaffold of interpretable parameters](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/config.py)
 
-4.	Modelled tests (PCR, lateral flow…) with finite capacity where backlogs can develop.
+4.	[Modelled tests](https://github.com/jeremy-large/CODiT/blob/master/lib/codit/society/test.py) (PCR, lateral flow…) with finite capacity where backlogs can develop.
 We generate estimates of (1 & 2) using publicly available data. 
 
 So the model can be thought of as an approximate Digital Twin for a community such as a city, 
