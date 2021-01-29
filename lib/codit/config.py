@@ -2,6 +2,7 @@
 class CFG:
 
     # Disease:
+    DEFAULT_COVID = "Default Covid"
     _TARGET_R0 = 1.4  # before Test and Trace and Isolation
 
     DAYS_BEFORE_INFECTIOUS = 4   # t0
@@ -19,6 +20,7 @@ class CFG:
 
     # Society:
     PROB_INFECT_IF_TOGETHER_ON_A_DAY = 0.025  # this is a moving target - because depends on hand-washing, masks ...
+    MUTATION_PROB_INFECT_IF_TOGETHER_ON_A_DAY = 0.039  # 56% more infectious than initial strain
     PROB_NON_C19_SYMPTOMS_PER_DAY = 0.01  # like b - probability someone unnecessarily requests a test on a given day
     PROB_TEST_IF_REQUESTED = 1            # pG   # set to 1 ... however, see the next parameter ... with capacity idea
     DAILY_TEST_CAPACITY_PER_HEAD = 0.0075  # being very generous here ... this is probably more like 0.005

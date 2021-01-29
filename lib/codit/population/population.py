@@ -1,6 +1,7 @@
 import random
 from collections import defaultdict
 from codit.population.person import Person
+from codit.config import CFG
 
 import numpy as np
 
@@ -41,11 +42,20 @@ class Population:
     def count_infectious(self):
         return sum(p.infectious for p in self.people)
 
-    def count_infected(self):
-        return len(self.infected())
+    # def count_infected(self):
+    #     return len(self.infected())
+    #
+    # def infected(self):
+    #     return [p for p in self.people if (p.disease is not None or p.immune)]
 
-    def infected(self):
-        return [p for p in self.people if (p.disease is not None or p.immune)]
+    def count_infected(self, covid_name=None):
+        covid_name = covid_name or CFG.DEFAULT_COVID
+        return len(self.infected(covid_name))
+
+    def infected(self, covid_name):
+        infected_people = [p for p in self.people if (p.disease is not None or p.immune)]
+        return [p for p in infected_people if (p.disease.covid_name is covid_name)]
+        # cant figure out why p.disease.covid_name is NoneType here. testing infected_people[xx].disease.covid_name produces string type.
 
     def update_time(self):
         for p in self.people:
