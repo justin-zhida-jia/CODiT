@@ -94,6 +94,9 @@ class OutbreakRecorder:
                 # len([t for t in all_completed_tests if t.positive]) / N / o.time_increment,
                 # tot_haz/pot_haz,
                 ]
+        step_variants = [variants,
+                         [o.pop.count_infected(d) for d in variants],
+                         [o.pop.count_infectious(d) for d in variants]]
         if o.step_num % (50 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
             logging.info(f"Day {int(step[0])}, prop infected is {step[1]:2.2f}, "
                          f"prop infectious is {step[2]:2.4f}")

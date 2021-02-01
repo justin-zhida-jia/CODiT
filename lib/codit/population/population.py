@@ -39,8 +39,9 @@ class Population:
             while p.days_infected() < stage:
                 p.update_time()
 
-    def count_infectious(self):
-        return sum(p.infectious for p in self.people)
+    def count_infectious(self, disease=None):
+        infected = self.infected(disease)
+        return sum(p.infectious for p in infected)
 
     def count_infected(self, disease=None):
         return len(self.infected(disease))
