@@ -17,12 +17,11 @@ class Person:
         self.society = society
         self.isolation = None
         self.infectious = False
-        self.immune = False
+        self.immunities = set()
         self.time_since_infection = 0
         self.disease = None
         self.infector = None
         self.victims = set()
-        self.infected = False
         self.episode_time = 1. / self.society.episodes_per_day
         self.name = name
 
@@ -40,14 +39,14 @@ class Person:
             self.infectious_attack(other, days)
 
     def infectious_attack(self, other, days):
-        if not other.infected:
+        if self.disease not in other.immunities:
             if random.random() < self.disease.pr_transmit_per_day * days:
                 other.set_infected(self.disease, infector=self)
                 self.victims.add(other)
 
     def set_infected(self, disease, infector=None):
         assert self.disease is None
-        self.infected = True
+        self.immunities.add(disease)
         self.infectious = True
         self.disease = disease
         self.infector = infector
@@ -66,7 +65,6 @@ class Person:
 
     def recover(self):
         self.infectious = False
-        self.immune = True
         self.disease = None
 
     def update_time(self):
@@ -93,7 +91,7 @@ class Person:
             self.recover()
 
     def chain(self):
-        assert self.infected, f"We cannot generate a chain for a person who has not been infected. {self}"
+        assert self.immunities, f"We cannot generate a chain for a person who has not been infected. {self}"
         chain = [self]
         m_inf = self.infector
         while m_inf is not None:

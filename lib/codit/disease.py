@@ -20,15 +20,30 @@ def covid_hazard(age):
     return 0
 
 
+def set_infectivity(covid_name, pr_transmission_per_day):
+    """
+    :param covid_name:
+    :param pr_transmission_per_day:
+    :return: we're keen to handle two cases: pr_transmission_per_day is a float, and pr_transmission_per_day is a dict
+    """
+    if type(pr_transmission_per_day) == dict:
+        return pr_transmission_per_day[covid_name]
+    return pr_transmission_per_day
+
+
 class Disease:
     """
     This is not a case of a disease, it is the strain of disease.
     """
-    def __init__(self, days_infectious, pr_transmission_per_day, covid_name, config=None):
+    def __init__(self, days_infectious, pr_transmission_per_day, covid_name=None, config=None):
+        # TODO: would this be self.name rather than self.covid_name?
         set_config(self, config)
         self.days_infectious = days_infectious
-        self.pr_transmit_per_day = pr_transmission_per_day
+        self.pr_transmit_per_day = set_infectivity(covid_name, pr_transmission_per_day)
         self.covid_name = covid_name
+
+    def __repr__(self):
+        return self.covid_name
 
 
 class Covid(Disease):

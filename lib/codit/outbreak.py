@@ -84,9 +84,9 @@ class OutbreakRecorder:
         # pot_haz = sum([covid_hazard(person.age) for person in o.pop.people])
         # tot_haz = sum([covid_hazard(person.age) for person in o.pop.infected()])
         all_completed_tests = [t for q in o.society.queues for t in q.completed_tests]
+        variants = set(p.disease for p in o.pop.people) - {None}
         step = [o.time,
-                # o.pop.count_infected() / N,  # displays number of people infected with Default Covid
-                o.pop.count_infected("B.1.1.7 Covid") / N, # displays number of people infected with specific varient
+                o.pop.count_infected() / N,  # displays number of people infected with Default Covid
                 o.pop.count_infectious() / N,
                 len(all_completed_tests) / N / o.time_increment,
                 sum(len([t for t in q.tests if t.swab_taken]) for q in o.society.queues) / N,
