@@ -59,7 +59,12 @@ class Outbreak:
             self.record_state()
         self.recorder.realized_r0 = self.pop.realized_r0()
         self.recorder.society_config = self.society.cfg
-        self.recorder.disease_config = self.disease.cfg
+
+        if type(self.disease) is set:
+            self.recorder.disease_config = []
+            for d in self.disease: self.recorder.disease_config + [d.cfg]
+        else: self.recorder.disease_config = self.disease.cfg
+
         return self.recorder
 
     def update_time(self):
@@ -84,9 +89,9 @@ class OutbreakRecorder:
         # pot_haz = sum([covid_hazard(person.age) for person in o.pop.people])
         # tot_haz = sum([covid_hazard(person.age) for person in o.pop.infected()])
         all_completed_tests = [t for q in o.society.queues for t in q.completed_tests]
+        variants = list(set(p.disease for p in o.pop.people) - {None})
         step = [o.time,
-                # o.pop.count_infected() / N,  # displays number of people infected with Default Covid
-                o.pop.count_infected("B.1.1.7 Covid") / N, # displays number of people infected with specific varient
+                o.pop.count_infected() / N,  # displays number of people infected with Default Covid
                 o.pop.count_infectious() / N,
                 len(all_completed_tests) / N / o.time_increment,
                 sum(len([t for t in q.tests if t.swab_taken]) for q in o.society.queues) / N,
@@ -94,6 +99,12 @@ class OutbreakRecorder:
                 # len([t for t in all_completed_tests if t.positive]) / N / o.time_increment,
                 # tot_haz/pot_haz,
                 ]
+
+        step_variants = [variants,
+                         [o.pop.count_infected(d) for d in variants],
+                         [o.pop.count_infectious(d) for d in variants]]
+        # TODO : Implement a way to record infect & infectious based on variants
+
         if o.step_num % (50 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
             logging.info(f"Day {int(step[0])}, prop infected is {step[1]:2.2f}, "
                          f"prop infectious is {step[2]:2.4f}")

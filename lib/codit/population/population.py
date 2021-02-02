@@ -32,30 +32,26 @@ class Population:
         return (random.sample(self.people, group_size) for _ in range(len(self.people)))
 
     def seed_infections(self, n_infected, disease, seed_periods=None):
-        seed_periods = seed_periods or disease.days_infectious
-        for p in random.sample(self.people, n_infected):
-            p.set_infected(disease)
-            stage = random.random() * seed_periods
-            while p.days_infected() < stage:
-                p.update_time()
+        if type(disease) is not set: disease = {disease}
+        for d in disease:
+            seed_periods = seed_periods or d.days_infectious
+            for p in random.sample(self.people, n_infected):
+                p.set_infected(d)
+                stage = random.random() * seed_periods
+                while p.days_infected() < stage:
+                    p.update_time()
 
-    def count_infectious(self):
-        return sum(p.infectious for p in self.people)
+    def count_infectious(self, disease=None):
+        infected = self.infected(disease)
+        return sum(p.infectious for p in infected)
 
-    # def count_infected(self):
-    #     return len(self.infected())
-    #
-    # def infected(self):
-    #     return [p for p in self.people if (p.disease is not None or p.immune)]
+    def count_infected(self, disease=None):
+        return len(self.infected(disease))
 
-    def count_infected(self, covid_name=None):
-        covid_name = covid_name or CFG.DEFAULT_COVID
-        return len(self.infected(covid_name))
-
-    def infected(self, covid_name):
-        infected_people = [p for p in self.people if (p.disease is not None or p.immune)]
-        return [p for p in infected_people if (p.disease.covid_name is covid_name)]
-        # cant figure out why p.disease.covid_name is NoneType here. testing infected_people[xx].disease.covid_name produces string type.
+    def infected(self, disease=None):
+        if disease is None:
+            return [p for p in self.people if p.immunities]
+        return [p for p in self.people if (disease in p.immunities)]
 
     def update_time(self):
         for p in self.people:

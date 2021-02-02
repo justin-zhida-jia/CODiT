@@ -6,7 +6,7 @@ from codit.society import TestingTracingSociety
 from codit.society.alternatives import StrategicTester
 from codit.society.strategic import TwoTrackTester
 from codit.society.lateral import LateralFlowUK
-from codit.disease import Covid, Covid_Mutation
+from codit.disease import Covid
 from codit.population.networks.radial_age import RadialAgePopulation
 from codit.population.networks.household_workplace import HouseholdWorkplacePopulation
 from codit.population.networks.city import CityPopulation
@@ -17,15 +17,15 @@ ALL_TIME_DAYS = 15
 
 def test_mutation():
     random.seed(42)
-    mutation = Covid_Mutation(pr_transmission_per_day=CFG.MUTATION_PROB_INFECT_IF_TOGETHER_ON_A_DAY, covid_name="B.1.1.7 Covid")
+    mutation = Covid(pr_transmission_per_day=CFG.PROB_INFECT_IF_TOGETHER_ON_A_DAY["B.1.1.7"], name="B.1.1.7")
     o = Outbreak(TwoTrackTester(), mutation, pop_size=5000, seed_size=50, n_days=150)
     o.simulate()
 
 
 def test_multiple_strain_society():
     random.seed(42)
-    mutation = Covid_Mutation(pr_transmission_per_day=CFG.MUTATION_PROB_INFECT_IF_TOGETHER_ON_A_DAY, covid_name="B.1.1.7 Covid")
-    disease = {Covid(), mutation}
+    variant_1 = Covid(pr_transmission_per_day=CFG.PROB_INFECT_IF_TOGETHER_ON_A_DAY["B.1.1.7"], name="B.1.1.7")
+    disease = {Covid(), variant_1}
     o = Outbreak(TwoTrackTester(), disease, pop_size=5000, seed_size=50, n_days=150)
     o.simulate()
 
