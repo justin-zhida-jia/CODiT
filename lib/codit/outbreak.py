@@ -26,8 +26,9 @@ class Outbreak:
 
         self.society = society
         self.disease = disease
-        # switch to heatmap video
+        # Add a switch of heatmap video
         self.set_recorder(show_heatmap=show_heatmap)
+    
 
     def prepare_population(self, pop_size, population, population_type, society, person_type):
         if population:

@@ -37,8 +37,7 @@ class CityPopulation(FixedNetworkPopulation):
 
 def build_city_cliques(people):
     """
-    Change it to a class method to make sure the Home attribute assigned to person can be saved in self.people
-
+    :param people: a list of population.covid.PersonCovid() objects
     :return: a list of little sets, each is a 'clique' in the graph, some are households, some are workplaces
     each individual should belong to exactly one household and one workplace
     for example: [{person_0, person_1, person_2}, {person_0, person_10, person_54, person_88, person_550, person_270}]
@@ -64,10 +63,40 @@ def build_city_cliques(people):
 
     return households + workplaces + classrooms + care_homes
 
+
+
+
+def is_care_home(home):
+    return min([p.age for p in home]) >= MAXIMUM_WORKING_AGE and len(home) > 20
+
+
+def assign_staff(care_homes, working_age_people, staff=5):
+    carers = set()
+    for home in care_homes:
+        home_carers = set(random.sample(working_age_people, staff))
+        home |= home_carers
+        carers |= home_carers
+    report_size(care_homes, 'care_homes')
+    return carers
+
+
+def report_size(care_homes, ch):
+    logging.info(f"{len(care_homes)} {ch} of mean size {np.mean([len(x) for x in care_homes]):2.2f}")
+
+
+def build_class_groups(people):
+    classrooms = []
+    for kids_age in range(MINIMUM_CLASS_AGE, MAXIMUM_CLASS_AGE+1):
+        schoolkids = [p for p in people if p.age == kids_age]
+        random.shuffle(schoolkids)
+        classrooms += build_workplaces(schoolkids, classroom_size=30)
+    logging.info(f"Only putting children >{MINIMUM_CLASS_AGE} years old into classrooms.")
+    return classrooms
+
+
 def build_households(people):
     """
-    Change it to a class method to make sure the Home attribute assigned to person can be saved in self.people
-
+    :param people: a list of population.covid.PersonCovid() objects
     :return: a list of households, where households are a list of person objects. now with an assigned age.
     """
     n_individuals = len(people)
@@ -106,55 +135,6 @@ def build_households(people):
     return households
 
 
-def is_care_home(home):
-    return min([p.age for p in home]) >= MAXIMUM_WORKING_AGE and len(home) > 20
-
-
-def assign_staff(care_homes, working_age_people, staff=5):
-    carers = set()
-    for home in care_homes:
-        home_carers = set(random.sample(working_age_people, staff))
-        home |= home_carers
-        carers |= home_carers
-    report_size(care_homes, 'care_homes')
-    return carers
-
-
-def report_size(care_homes, ch):
-    logging.info(f"{len(care_homes)} {ch} of mean size {np.mean([len(x) for x in care_homes]):2.2f}")
-
-
-def build_class_groups(people):
-    classrooms = []
-    for kids_age in range(MINIMUM_CLASS_AGE, MAXIMUM_CLASS_AGE+1):
-        schoolkids = [p for p in people if p.age == kids_age]
-        random.shuffle(schoolkids)
-        classrooms += build_workplaces(schoolkids, classroom_size=30)
-    logging.info(f"Only putting children >{MINIMUM_CLASS_AGE} years old into classrooms.")
-    return classrooms
-
-
-
-def next_household_home(homes_list, allocated_coordinates_list):
-    """
-    Randomly pick up one home with ['lon', 'lat', 'building_type'], and remove the allocated home from the list,
-    as the number of homes are pre-defined according to actual number of accommodation of buildings and average number of
-    households per building_type, the actual number of households may exceed the pre-defined number of homes.
-    So here we recycle the apartments and terraces homes to allocate again just in case, as these two building types can
-    have multiple households.
-    :param homes_list:
-    :param allocated_coordinates_list:
-    :return: one home ['lon', 'lat', 'building_type']
-    """
-    if len(homes_list) > 0:
-        next_home = random.choice(homes_list)
-        if next_home[2] == 'apartments' or next_home[2] == 'terrace':
-            allocated_coordinates_list.append(next_home)
-        homes_list.remove(next_home)
-    else:
-        next_home = random.choice(allocated_coordinates_list)
-    return next_home
-
 def next_household_ages(household_list):
     """
     :param: complete list of households
@@ -192,3 +172,24 @@ def build_workplaces(people, classroom_size=-1):
 
 def next_workplace_size():
     return random.choice(household_workplace.WORKPLACE_SIZE_REPRESENTATIVE_EXAMPLES)
+
+
+def next_household_home(homes_list, allocated_coordinates_list):
+    """
+    Randomly pick up one home with ['lon', 'lat', 'building_type'], and remove the allocated home from the list,
+    as the number of homes are pre-defined according to actual number of accommodation of buildings and average number of
+    households per building_type, the actual number of households may exceed the pre-defined number of homes.
+    So here we recycle the apartments and terraces homes to allocate again just in case, as these two building types can
+    have multiple households.
+    :param homes_list:
+    :param allocated_coordinates_list:
+    :return: one home ['lon', 'lat', 'building_type']
+    """
+    if len(homes_list) > 0:
+        next_home = random.choice(homes_list)
+        if next_home[2] == 'apartments' or next_home[2] == 'terrace':
+            allocated_coordinates_list.append(next_home)
+        homes_list.remove(next_home)
+    else:
+        next_home = random.choice(allocated_coordinates_list)
+    return next_home
