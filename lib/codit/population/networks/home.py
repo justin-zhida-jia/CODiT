@@ -9,9 +9,9 @@ import numpy as np
 from codit import share_dir
 
 DATA_PATH = os.path.join(share_dir(), 'codit', 'data')
-COORDINATES_CSV = os.path.join(DATA_PATH, 'city', 'population', 'coordinates_leeds.csv')
-TYPES_CONSTRAINTS_CSV = os.path.join(DATA_PATH, 'city', 'population', 'types_households_constraints_leeds.csv')
-COORDINATES_NUM_HOUSEHOLDS_CSV = os.path.join(DATA_PATH, 'city', 'population', 'coordinates_num_households_leeds.csv')
+COORDINATES_CSV = os.path.join(DATA_PATH, 'city', 'population', 'coordinates.csv')
+TYPES_CONSTRAINTS_CSV = os.path.join(DATA_PATH, 'city', 'population', 'types_households_constraints.csv')
+COORDINATES_NUM_HOUSEHOLDS_CSV = os.path.join(DATA_PATH, 'city', 'population', 'coordinates_num_households.csv')
 
 building_types = ["apartments",
                  "bungalow",
@@ -109,5 +109,38 @@ def allocate_households_to_each_building(num_of_households, list_types_average_h
 
         df_result.to_csv(COORDINATES_NUM_HOUSEHOLDS_CSV, index=False)
     return df_result.values.tolist()
+
+def build_households_home_list(total_h=50000):
+    """
+    Build a list of total_h households: ['lon', 'lat', 'building_type']
+    :param total_h: total number of households
+    :return: a full list of ['lon', 'lat', 'building_type']
+    """
+    coords_types = get_coords(COORDINATES_CSV)
+    types_counts = count_coords_for_types(coords_types)
+    df_types_constraints_households = merge_building_types_constraints_to_accommodations(types_counts, TYPES_CONSTRAINTS_CSV)
+
+    aver_num_households = (df_types_constraints_households['min_households'] + df_types_constraints_households['max_households']) / 2
+    df_types_constraints_households['average_num_households'] = aver_num_households
+    init_total_households = np.sum(df_types_constraints_households['number'] * aver_num_households)
+    index_apartments = df_types_constraints_households['building_type']=='apartments'
+    remaining_households_in_apartments = total_h - (init_total_households - df_types_constraints_households.loc[index_apartments, 'average_num_households'] * \
+    df_types_constraints_households.loc[index_apartments, 'number'])
+    df_types_constraints_households.loc[index_apartments, 'average_num_households'] = remaining_households_in_apartments / \
+                                                                                        df_types_constraints_households.loc[index_apartments, 'number']
+    df_types_constraints_households.drop('max_households', axis=1, inplace=True)
+
+    list_types_average_households = list(
+        zip(df_types_constraints_households['building_type'], df_types_constraints_households['number'],
+            df_types_constraints_households['average_num_households'] - df_types_constraints_households['min_households'],
+            df_types_constraints_households['min_households']))
+    list_num_households_per_building = allocate_households_to_each_building(total_h, list_types_average_households, coords_types)
+    list_households_info = []
+    for num_households_per_building in list_num_households_per_building:
+
+        if int(num_households_per_building[3]) > 0:
+            list_households_info += [num_households_per_building[:3]] * int(num_households_per_building[3])
+
+    return list_households_info
 
 

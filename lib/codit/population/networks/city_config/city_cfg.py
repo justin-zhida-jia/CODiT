@@ -14,8 +14,10 @@ def read_demographic_data(section, file_name, data_dir=share_dir() / "codit/data
 DEMO_DATA = (read_demographic_data('population', 'table-8.csv')["%"] / 100).to_dict()
 ROUNDING = 0.001  # rounding such that sum of rates equals 1
 
-# Total population estimate (2019) Source: ONS* https://observatory.leeds.gov.uk/population/
-POPULATION_LEEDS = 793139
+
+POPULATION_CITY = 793139 # Total population estimate of Leeds (2019) Source: ONS* https://observatory.leeds.gov.uk/population/
+CITY_AREA = "area['ISO3166-2'='GB-LDS'][admin_level=8]" # Area str of Leeds for request to OpenStreetMap
+
 
 "Averages based on city's Data"
 AVERAGE_HOUSEHOLD_SIZE = 2.5

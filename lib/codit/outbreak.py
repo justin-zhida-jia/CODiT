@@ -1,36 +1,21 @@
 import pandas as pd
 import logging
-import numpy as np
-import math
-import matplotlib.pyplot as plt
-# according to Leeds accommodations' coordinates distribution's 'lon':'lat' ratio, the unit is inch, real size would fit the distribution
-plt.rcParams["figure.figsize"] = [12, 5]
-# Need "pip install celluloid", celluloid -- a 3rd-party python lib using matplotlib.animation.ArtistAnimation
-from celluloid import Camera
+
 
 from codit.population.covid import PersonCovid
 from codit.population.population import FixedNetworkPopulation
-
+from codit.outbreakvisualiser import OutbreakVisualiser
 from codit.disease import covid_hazard
 
-def setup_range_for_histogram(pop):
-    """
-    Establish range of all population coordinates for every heatmap generated later
-    :param pop:
-    :return: range of all population coordinates on city map e.g. [-1.7776973000000003, -1.3100551999999999, 53.7060248, 53.942890000000006]
-    """
-    all_pop_coords = [[p.home.coordinate['lon'], p.home.coordinate['lat']] for p in pop.people]
-    all_pop_coords_list = list(zip(*all_pop_coords))
-    heatmap, xedges, yedges = np.histogram2d(all_pop_coords_list[0], all_pop_coords_list[1], bins=300)
-    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-    return extent
+
 
 
 class Outbreak:
     def __init__(self, society, disease, pop_size=0, seed_size=0, n_days=0,
                  population=None,
                  population_type=None,
-                 person_type=None):
+                 person_type=None,
+                 show_heatmap=False):
 
         self.pop = self.prepare_population(pop_size, population, population_type, society, person_type)
         society.clear_queues()
@@ -41,8 +26,8 @@ class Outbreak:
 
         self.society = society
         self.disease = disease
-
-        self.set_recorder()
+        # switch to heatmap video
+        self.set_recorder(show_heatmap=show_heatmap)
 
     def prepare_population(self, pop_size, population, population_type, society, person_type):
         if population:
@@ -59,8 +44,8 @@ class Outbreak:
         person_type = person_type or PersonCovid
         return population_type(pop_size, society, person_type=person_type)
 
-    def set_recorder(self, recorder=None):
-        self.recorder = recorder or OutbreakRecorder()
+    def set_recorder(self, recorder=None, show_heatmap=False):
+        self.recorder = recorder or OutbreakRecorder(show_heatmap)
 
     def initialize_timers(self, n_days, enc_per_day):
         self.n_days = n_days
@@ -76,8 +61,7 @@ class Outbreak:
             self.society.manage_outbreak(self.pop)
             self.pop.attack_in_groupings(self.group_size)
             self.record_state()
-        # close plt after cameras have been saved to avoid showing single heatmap
-        plt.close()
+
         self.recorder.realized_r0 = self.pop.realized_r0()
         self.recorder.society_config = self.society.cfg
         self.recorder.disease_config = self.disease.cfg
@@ -96,21 +80,19 @@ class Outbreak:
 
 
 class OutbreakRecorder:
-    def __init__(self):
+    def __init__(self, show_heatmap=False):
         self.story = []
         self.realized_r0 = None
-        # initialise fig, camera, and heatmap_range for video generation
-        self.fig = plt.figure(dpi=200)
-        self.camera = Camera(self.fig)
-        self.heatmap_range = []
+        self.show_heatmap = show_heatmap
+        self.visualiser = None
+
 
     def record_step(self, o):
         N = len(o.pop.people)
         # pot_haz = sum([covid_hazard(person.age) for person in o.pop.people])
         # tot_haz = sum([covid_hazard(person.age) for person in o.pop.infected()])
-        if o.step_num == 1:
-            # set up heatmap range with all population's coordinates
-            self.heatmap_range = setup_range_for_histogram(o.pop)
+        if self.show_heatmap and o.step_num == 1:
+            self.visualiser = OutbreakVisualiser(o.pop)
 
         all_completed_tests = [t for q in o.society.queues for t in q.completed_tests]
         step = [o.time,
@@ -126,25 +108,10 @@ class OutbreakRecorder:
         if o.step_num % (7 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
             logging.info(f"Day {int(step[0])}, prop infected is {step[1]:2.2f}, "
                          f"prop infectious is {step[2]:2.4f}")
-            # Generate heatmaps for infectious people along the time, feed heatmaps into camera
-            if o.pop.count_infectious() > 0:
-                coord = [[p.home.coordinate['lon'], p.home.coordinate['lat']] for p in o.pop.people if
-                         p.infectious]
-                coord_column_list = list(zip(*coord))
-                # param range in np.histogram2d: The leftmost and rightmost edges of the bins along each dimension : [[xmin, xmax], [ymin, ymax]]
-                # All values outside of this range will be considered outliers and not tallied in the histogram.
-                heatmap, xedges, yedges = np.histogram2d(coord_column_list[0], coord_column_list[1], bins=300,\
-                                                         range=[[self.heatmap_range[0], self.heatmap_range[1]],
-                                                                [self.heatmap_range[2], self.heatmap_range[3]]])
-               
-                extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-                ax = plt.gca()
-                ax.text(0.1, 1.02, f'Day {int(step[0])}, prop infectious is {step[2]:2.4f} in simulated Leeds', transform=ax.transAxes)
-                plt.xlabel('latitude')
-                plt.ylabel('longitude')
-                plt.imshow(heatmap.T, extent=extent, origin='lower', vmin=0, vmax=20)
-                self.camera.snap()
-                
+            if self.show_heatmap:
+                self.visualiser.generate_heatmap(o)
+                if o.step_num == o.n_periods:
+                    self.visualiser.close_plt()
         self.story.append(step)
 
     def plot(self, **kwargs):
@@ -160,3 +127,15 @@ class OutbreakRecorder:
                       'tested daily', 'waiting for test results', 'isolating']  # , 'daily_detected_']
         df = df.set_index('days of epidemic')
         return df
+
+    def outbreak_visualise(self, is_html5=False):
+        """
+        show heatmap_video in notebook
+        :return: video tag or a string
+        """
+        if self.show_heatmap:
+            return self.visualiser.show_heatmap_video(is_html5)
+        else:
+            return "Video has been switched off!"
+
+

@@ -2,6 +2,8 @@ import overpy # "conda install -c conda-forge overpy" -- a Python Wrapper to acc
 import csv
 import time
 
+
+
 # building_types are defined for key:building:accommodations at https://wiki.openstreetmap.org/wiki/Key:building
 building_types = ["apartments",
                  "bungalow",
@@ -18,8 +20,7 @@ building_types = ["apartments",
                  "static_caravan",
                  "terrace"]
 
-#area["ISO3166-1"="GB"][admin_level=2];
-def request_coords_to_csv(csvfilename):
+def request_coords_to_csv(csvfilename, city_area):
     """
     Request coordinates of each building type defined in building_types[] in Leeds area from OpenStreetMap, and save
     the results into csv file
@@ -27,10 +28,10 @@ def request_coords_to_csv(csvfilename):
     :return:
     """
     api = overpy.Overpass()
-    coords  = []
+    coords = []
     for building_type in building_types:
         r = api.query(f"""
-        area["ISO3166-2"="GB-LDS"][admin_level=8];
+        {city_area};
         (nwr["building"="{building_type}"](area);         
         );
         out center;
@@ -42,7 +43,7 @@ def request_coords_to_csv(csvfilename):
         coords += [(float(rel.center_lon), float(rel.center_lat), building_type) 
                    for rel in r.relations]   
         time.sleep(5) # leave enough interval between requests to OpenStreetMap server
-    header_name = ['lon', 'lat','building_type']
+    header_name = ['lon', 'lat', 'building_type']
     with open(csvfilename, 'w', newline='') as csv_coords_w:
         coords_wr = csv.writer(csv_coords_w)
         coords_wr.writerow(header_name)   
