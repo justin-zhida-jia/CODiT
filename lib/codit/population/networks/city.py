@@ -64,8 +64,6 @@ def build_city_cliques(people):
     return households + workplaces + classrooms + care_homes
 
 
-
-
 def is_care_home(home):
     return min([p.age for p in home]) >= MAXIMUM_WORKING_AGE and len(home) > 20
 
@@ -102,9 +100,6 @@ def build_households(people):
     n_individuals = len(people)
     assigned = 0
     households = []
-    # to recycle allocated homes whose type is either 'apartment' or 'terrace'
-    allocated_coordinates_list = []
-
     num_h = int(n_individuals / AVERAGE_HOUSEHOLD_SIZE)
     household_examples = build_characteristic_households(num_h)
     # create num_h of homes
@@ -115,7 +110,7 @@ def build_households(people):
         ages = next_household_ages(household_examples)
         size = len(ages)
         # randomly pick up a home from list of homes
-        home = next_household_home(homes_list, allocated_coordinates_list)
+        home = next_household_home(homes_list)
 
         if assigned + size > n_individuals:
             ages = ages[:n_individuals - assigned - size]
@@ -125,7 +120,7 @@ def build_households(people):
         for j, age in enumerate(ages):
             indiv = people[j + assigned]
             indiv.age = age
-            # Initiate Home instance with (coordinates and building_type) to each person's home attribute within the population
+            # Initialise Home instance with (coordinates and building_type) to each person's home attribute within the population
             indiv.home = Home(home[0], home[1], home[2])
 
             hh.append(indiv)
@@ -174,22 +169,11 @@ def next_workplace_size():
     return random.choice(household_workplace.WORKPLACE_SIZE_REPRESENTATIVE_EXAMPLES)
 
 
-def next_household_home(homes_list, allocated_coordinates_list):
+def next_household_home(homes_list):
     """
-    Randomly pick up one home with ['lon', 'lat', 'building_type'], and remove the allocated home from the list,
-    as the number of homes are pre-defined according to actual number of accommodation of buildings and average number of
-    households per building_type, the actual number of households may exceed the pre-defined number of homes.
-    So here we recycle the apartments and terraces homes to allocate again just in case, as these two building types can
-    have multiple households.
-    :param homes_list:
-    :param allocated_coordinates_list:
+    Randomly pick up a ['lon', 'lat', 'building_type'] from homes list
+    :param: homes_list
     :return: one home ['lon', 'lat', 'building_type']
     """
-    if len(homes_list) > 0:
-        next_home = random.choice(homes_list)
-        if next_home[2] == 'apartments' or next_home[2] == 'terrace':
-            allocated_coordinates_list.append(next_home)
-        homes_list.remove(next_home)
-    else:
-        next_home = random.choice(allocated_coordinates_list)
-    return next_home
+    return random.choice(homes_list)
+
