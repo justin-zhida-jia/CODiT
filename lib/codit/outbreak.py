@@ -28,7 +28,7 @@ class Outbreak:
         self.disease = disease
         # Add a switch of heatmap video
         self.set_recorder(show_heatmap=show_heatmap)
-    
+
 
     def prepare_population(self, pop_size, population, population_type, society, person_type):
         if population:
@@ -46,7 +46,7 @@ class Outbreak:
         return population_type(pop_size, society, person_type=person_type)
 
     def set_recorder(self, recorder=None, show_heatmap=False):
-        self.recorder = recorder or OutbreakRecorder(show_heatmap)
+        self.recorder = recorder or OutbreakRecorder(self, show_heatmap)
 
     def initialize_timers(self, n_days, enc_per_day):
         self.n_days = n_days
@@ -81,19 +81,19 @@ class Outbreak:
 
 
 class OutbreakRecorder:
-    def __init__(self, show_heatmap=False):
+    def __init__(self, o, show_heatmap=False):
         self.story = []
         self.realized_r0 = None
-        self.show_heatmap = show_heatmap
-        self.visualiser = None
+        if show_heatmap:
+            self.visualiser = OutbreakVisualiser(o.pop)
+        else:
+            self.visualiser = None
 
 
     def record_step(self, o):
         N = len(o.pop.people)
         # pot_haz = sum([covid_hazard(person.age) for person in o.pop.people])
         # tot_haz = sum([covid_hazard(person.age) for person in o.pop.infected()])
-        if self.show_heatmap and o.step_num == 1:
-            self.visualiser = OutbreakVisualiser(o.pop)
 
         all_completed_tests = [t for q in o.society.queues for t in q.completed_tests]
         step = [o.time,
@@ -105,11 +105,11 @@ class OutbreakRecorder:
                 # len([t for t in all_completed_tests if t.positive]) / N / o.time_increment,
                 # tot_haz/pot_haz,
                 ]
-        # Increase the update frequency to have more heatmap images to show in video
-        if o.step_num % (7 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
+        if o.step_num % (50 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
             logging.info(f"Day {int(step[0])}, prop infected is {step[1]:2.2f}, "
                          f"prop infectious is {step[2]:2.4f}")
-            if self.show_heatmap:
+        if self.visualiser:
+            if o.step_num % (7 * o.society.episodes_per_day) == 1 or (o.step_num == o.n_periods):
                 self.visualiser.generate_heatmap(o)
                 if o.step_num == o.n_periods:
                     self.visualiser.close_plt()
@@ -134,7 +134,7 @@ class OutbreakRecorder:
         show heatmap_video in notebook
         :return: video tag or a string
         """
-        if self.show_heatmap:
+        if self.visualiser:
             return self.visualiser.show_heatmap_video(is_html5)
         else:
             return "Video has been switched off!"

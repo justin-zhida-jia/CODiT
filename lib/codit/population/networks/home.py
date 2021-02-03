@@ -49,6 +49,14 @@ def get_coords(csvfilename):
 def count_coords_for_types(coords):
     """
     Count number of coordinates for each building-type from coordinates-building_type list
+    The coordinates list requested from Openstreetmap is organized as a list of ['lon','lat','building_type'].
+    Here I just want to get the number of coordinates for eacy building_type within the coordinates list,
+    e.g. number of houses, number of apartments.
+    I also use 'types_households_constraints.csv' to assume a minimum number and maximum number of households for each building-type.
+    For example, I assumed the min and max number of households of a house are both 1.
+    The min number of households in an apartment is 20, while max number of households in an apartment is 100.
+    Number of households' distribution in the map should follow the distribution of each type of building.
+    E.g. Apartment and terrace coordinates should have higher density of population.
     :param coords: list of coordinates-building_type pairs
     :return: list of (building_type, count)
     """
